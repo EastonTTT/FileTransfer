@@ -2,7 +2,18 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "types": ["node"],                     // 👈 加上 node 类型支持
+    "baseUrl": ".",                        // 👈 加上路径基础
+    "paths": {
+      "@/*": ["src/*"]                     // 👈 加上路径别名映射
+    },
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
