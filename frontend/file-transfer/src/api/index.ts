@@ -1,9 +1,9 @@
 import myAxios from '@/utils/request'
 
 export function uploadFile(data: FormData) {
-  myAxios.post('', data)
+  return myAxios.post('upload', data)
 }
 
-export function merge() {
-  myAxios.get('')
+export function merge(data) {
+  return myAxios.post('upload/merge', data)
 }

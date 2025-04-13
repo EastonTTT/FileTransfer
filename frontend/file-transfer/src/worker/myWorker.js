@@ -3,10 +3,10 @@ import SparkMD5 from 'spark-md5'
 //监听主线程传来的信息
 self.addEventListener('message', async (event) => {
   try {
-    const { chunkSize, file } = event.data //获取文件数据和切片大小
+    const { file, chunkSize } = event.data //获取文件数据和切片大小
     const chunkList = createChunkList(file, chunkSize) //调用函数对文件进行切片 返回切片数组
-    const hash = await calculateHash(chunkList) //调用函数计算文件的hash
-    self.postMessage({ type: 'done', hash, chunkList }) //返回计算好的hash和切片数组给主线程
+    const fileHash = await calculateHash(chunkList) //调用函数计算文件的hash
+    self.postMessage({ type: 'done', fileHash, chunkList }) //返回计算好的hash和切片数组给主线程
   } catch (err) {
     //错误处理
     self.postMessage({ type: 'error', error: err.message || err })
