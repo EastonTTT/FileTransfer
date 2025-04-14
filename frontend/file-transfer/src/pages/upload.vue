@@ -1,16 +1,33 @@
 <template>
     <div class="upload">
-        <input type="file" :multiple="multiple" accept="accept" :style="{ 'display': 'none' }" ref="filesInput"
-            @change="filesChange">
-        <button @click="handleClick">click me to upload files!</button>
-    </div>
-    <div v-for="(item, index) in uploadFileList" :key="index">
         <div>
-            <t-progress theme="circle" :percentage="item.percentage" />
-            <button @click="handlePause(item.id)">暂停上传</button>
-            <button @click="handleResume(item.id)">恢复上传</button>
-            <button @click="handleCancel(item.id)">取消上传</button>
+            <input type="file" :multiple="multiple" accept="accept" :style="{ 'display': 'none' }" ref="filesInput"
+                @change="filesChange">
+            <button @click="handleClick">click me to upload files!</button>
+        </div>
+        <div v-for="(item, index) in uploadFileList" :key="index">
+            <div>
+                <div :style="{ 'display': 'flex', alignItems: 'center', justifyContent: 'space-around' }">
+                    <t-progress theme="circle" :percentage="item.percentage" />
+                    <p>文件名：{{ item.fileName }}，状态：</p>
+                    <div>
+                        <p v-if="item.state === 1">文件计算哈希、分片中...</p>
+                        <p v-if="item.state === 2">正在上传，请稍后...</p>
+                        <p v-if="item.state === 3">上传完成✔</p>
+                        <p v-if="item.state === 4">上传失败❌</p>
+                        <p v-if="item.state === 5">上传取消❌</p>
+                        <p v-if="item.state === 6">上传已暂停...</p>
+                        <p v-if="item.state === 7">合并中...</p>
+                    </div>
 
+                </div>
+                <div style="display: flex;">
+                    <button @click="handlePause(item.id)">暂停上传</button>
+                    <button @click="handleResume(item.id)">恢复上传</button>
+                    <button @click="handleCancel(item.id)">取消上传</button>
+                </div>
+
+            </div>
         </div>
     </div>
 </template>
@@ -176,9 +193,11 @@ const uploadChunk = async (chunkObj: Chunk, task: Task) => {
             task.whileRequests = task.whileRequests.filter((item) => item.chunkFile !== chunkObj.chunkFile)
             if (task.finishNumber === chunkObj.totalChunk) {
                 console.log('所有切片上传完毕，准备进行合并...')
+                task.state = 7
                 await handleMerge(task)
                 endTime = performance.now()
                 console.log(`文件上传完毕✅ 总耗时 ${(endTime - startTime) / 1000} 秒`)
+                task.state = 3
             }
             else uploadSingleFile(task)
         }
@@ -312,10 +331,11 @@ const updateProgress = (task: Task) => {
 
 <style lang="less" scoped>
 .upload {
-    width: 200px;
-    height: 200px;
-    margin: 0 auto;
+    // width: 500px;
+    // height: 200px;
+    margin: 100px auto;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     // background-color: skyblue; 
